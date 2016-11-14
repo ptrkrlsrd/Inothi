@@ -1,23 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <vector>
 #include <boost/date_time.hpp>
 
 using namespace std;
-
+using namespace boost::posix_time;
 class NoteElement {
   public:
     int index;
     string content;
-    boost::gregorian::date timeStamp;
+    ptime timeStamp;
+    
+    string toString() {
+      return to_string(index) + '#' + to_simple_string(timeStamp) + '#' + content;
+    }
 };
 
-enum Mode { Setup, MakeNote, ListNotes, DeleteNote};
-
-static void appendLineToFile(string fileName, string line);
-static void readFile(string fileName);
-void setup ();
-void makeNote (bool displayOutput);
-void listNotes ();
-void deleteNote ();
-string timeNow();

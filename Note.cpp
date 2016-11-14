@@ -1,133 +1,120 @@
 #include "Note.h"
+#include "Utilities.cpp"
+#include "InOut.cpp"
 #include <ncurses.h>
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include <ctime>
-#include <iostream>
 #include <locale>
 #include <string>
-#include <sstream>
 #include <vector>
 #include <boost/date_time.hpp>
 
 using namespace std;
 using namespace boost::gregorian;
+using namespace boost::posix_time;
 
-const string PATH = "/Users/petterkarlsrud/.ptr/";
-const string FILENAME = "Note.txt";
-const char TIME_FORMAT[] = "%Y %m-%d %a %H:%M";
+class NoteTaker {
+  public:
+    vector <NoteElement> noteArray;
 
-string dateToString (time_t _tm) {
-  struct tm * curtime = localtime(&_tm);
-  char output[30];
-  strftime(output, 30, TIME_FORMAT, curtime);
-  return string(output);
-}
-
-time_t timeFromString(string inString) {
-  std::locale::global(std::locale("ja_JP.utf8"));
-  std::time_t t = std::time(NULL);
-  char mbstr[100];
-  return strftime(mbstr, sizeof(mbstr), "%A %c", inString);
-}
-
-void split(const std::string &s, char delim, std::vector<std::string> &elems) {
-  std::stringstream ss;
-  ss.str(s);
-  std::string item;
-  while (std::getline(ss, item, delim)) {
-    elems.push_back(item);
-  }
-}
-
-std::vector<std::string> split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
-}
-
-void appendLineToFile(string fileName, string line) {
-  ofstream file;
-  file.open(fileName, ios_base::app);
-  std::ifstream inFile(fileName);
-  int index = std::count(std::istreambuf_iterator<char>(inFile), 
-      std::istreambuf_iterator<char>(), '\n');
-
-  try {
-    NoteElement element;
-    time_t tm = time(NULL);
-    string content = to_string(index) + '#' + dateToString(tm) + '#' + line;
-
-    element.content = content;
-    file << content << "\n";
-    file.close();
-  } catch (const ifstream::failure& e){
-    throw e;
-  }
-}
-
-void readFile(string fileName) {
-  string line;
-  ifstream file;
-  file.open(fileName);
-
-  try {
-    while(getline(file, line)) {
-      std::vector<std::string> x = split(line, '#');
-      NoteElement note;
-      note.index = std::stoi( x[0] );
-      note.timeStamp = timeFromString(x[1]);
-      note.content = x[2];
-      cout << note.index << " " << x[1] << " " << note.content << "\n";
+    vector<NoteElement> parseVector(vector<string> lines) {
+      vector<NoteElement> localArray;
+      for (string line : lines) {
+        vector<string> lines = Utilities::split(line, '#');
+        NoteElement note;
+        note.index = stoi(lines[0]);
+        note.timeStamp = Utilities::timeFromString(lines[1]);
+        note.content = lines[2];
+        localArray.push_back(note);
+      }
+      return localArray;
     }
-  } catch (const ifstream::failure& e){
-    throw e;
-  }
-}
 
-void setup () {
-  string selectedPath;
-  cout << "Select where you want to save your notes(Absolute path): " << "\n";
-  getline(cin, selectedPath);
-  cout << "Path: " << selectedPath << "\n";
-}
+    void updateArray () {
+      vector <string> lines = InOut::readFile(PATH + FILENAME);
+      noteArray = parseVector(lines);
+    }
 
-void makeNote (bool displayOutput) {
-  string input;
-  cout << "New note" << "\n";
-  getline(cin, input);
+    void setup () {
+      string selectedPath;
+      cout << "Select where you want to save your notes(Absolute path): " << "\n";
+      getline(cin, selectedPath);
+      cout << "Path: " << selectedPath << "\n";
+    }
 
-  appendLineToFile(PATH + FILENAME, input);
-  if (displayOutput) {
-    readFile(PATH + FILENAME);
-  }
-}
+    void makeNote () {
+      NoteElement element;
+      string input;
+      string fileName = PATH + FILENAME;
+      ptime now = boost::posix_time::microsec_clock::universal_time();
 
-void listNotes () {
-  readFile(PATH + FILENAME);
-}
+      cout << "New note" << "\n";
+      getline(cin, input);
 
-void deleteNote () {
+      int lineCount = InOut::countLines(fileName);
 
-}
+      element.index = lineCount;
+      element.timeStamp = now;
+      element.content = input;
+
+      InOut::appendLineToFile(fileName, element.toString());
+    }
+
+    void listNotes (vector<NoteElement> inArray) {
+      for(NoteElement note : inArray) {
+        cout << note.index << " " << note.timeStamp.date() << " " << note.content << "\n";
+      }
+    }
+
+    vector<NoteElement>  deleteNoteElementAtIndex (vector<NoteElement> inArray, int index) {
+      vector<NoteElement> localArray(inArray);
+      localArray.erase(localArray.begin() + index);
+      return localArray;
+    }
+
+    vector<NoteElement>  deleteNoteElement (vector<NoteElement> inArray) {
+      string input;
+      cout << "Delete note nr: " << "\n";
+      getline(cin, input);
+      int index = stoi(input);
+      vector<NoteElement> localArray = deleteNoteElementAtIndex(inArray, index);
+      return localArray;
+    }
+
+    void performDelete (vector<NoteElement> inArray) {
+      noteArray = deleteNoteElement(noteArray);
+      listNotes(noteArray);
+    }
+
+    void saveNotesToFile (vector<NoteElement> inArray, string path) {
+    }
+
+    void init (int argCount, char *arguments[]){
+      if (argCount == 1) {
+        updateArray();
+        makeNote();
+        listNotes(noteArray);
+      } else {
+        string mode = arguments[1];
+        updateArray();
+
+        if (mode == "setup" || mode == "Setup") {
+          setup();
+        } else if (mode == "list" || mode == "-l" || mode == "--list") {
+          listNotes(noteArray);
+        } else if (mode == "delete" || mode == "-rm") {
+          performDelete(noteArray);
+        } else{
+          cout << "Invalid option: " << mode << "\n";
+        }
+      }
+    }
+};
 
 int main (int argc, char *argv[]) {
-  if (argc == 1) {
-    makeNote(true);
-  } else {
-    string argument = argv[1];
-
-    if (argument == "setup" || argument == "Setup") {
-      setup();
-    } else if (argument == "list" || argument == "-l" || argument == "--list") {
-      listNotes();
-    } else if (argument == "delete" || argument == "-rm") {
-      deleteNote();
-    } else {
-      cout << "Invalid option: " << argument << "\n";
-    }
-  }
-
+  NoteTaker noteTaker;
+  noteTaker.init(argc, argv);
   return 0;
 }
+
