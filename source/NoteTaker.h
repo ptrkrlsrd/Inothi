@@ -3,7 +3,8 @@
 
 using namespace std;
 using namespace boost::posix_time;
-class NoteElement {
+
+class Note {
   public:
     int index;
     string content;

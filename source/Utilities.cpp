@@ -2,6 +2,9 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace std;
 using namespace boost::gregorian;
@@ -17,11 +20,11 @@ namespace Utilities {
     return string(output);
   }
 
-  ptime timeFromString(string inString) {
+  ptime timeFromString (string &inString) {
     return time_from_string(inString);
   }
 
-  void split(const string &inString, char delimiter, vector<string> &elements) {
+  void split (const string &inString, char delimiter, vector<string> &elements) {
     stringstream splitString;
     splitString.str(inString);
     string item;
@@ -30,9 +33,17 @@ namespace Utilities {
     }
   }
 
-  vector<string> split(const string &inString, char delimiter) {
+  vector<string> split (const string &inString, char delimiter) {
     vector<string> elements;
     split(inString, delimiter, elements);
     return elements;
+  }
+  
+  string getHomeDir () {
+    const char *homedir;
+    if ((homedir = getenv("HOME")) == NULL) {
+      homedir = getpwuid(getuid())->pw_dir;
+    }
+    return homedir;
   }
 };

@@ -5,9 +5,6 @@
 
 using namespace std;
 
-const string PATH = "/Users/petterkarlsrud/.ptr/";
-const string FILENAME = "Note.txt";
-
 namespace InOut {
   int countLines(string fileName) {
     ifstream inFile(fileName);
@@ -41,12 +38,15 @@ namespace InOut {
     }
     return localArray;
   }
-  void writeFile(string fileName, string line) {
+  
+  void writeFile(string fileName, vector<string> lines) {
     ofstream file;
     file.open(fileName, ios_base::trunc);
 
     try {
-      file << line << "\n";
+      for (string line : lines) {
+        file << line << "\n";
+      }
       file.close();
     } catch (const ifstream::failure& e){
       throw e;
