@@ -1,6 +1,4 @@
 #include "NoteTaker.h"
-#include "Utilities.cpp"
-#include "InOut.cpp"
 #include <ncurses.h>
 #include <iostream>
 #include <fstream>
@@ -10,17 +8,18 @@
 #include <vector>
 #include <boost/date_time.hpp>
 #include <libconfig.h++>
+#include "Utilities.cpp"
+#include "InOut.cpp"
 
 using namespace std;
 using namespace libconfig;
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
-string pp;
-
 class NoteTaker {
   public:
     vector <Note> noteArray;
+    string NotePath;
     
     string getNotePath () {
       return Utilities::getHomeDir() + "/.notes.txt";
@@ -30,7 +29,16 @@ class NoteTaker {
       string selectedPath;
       cout << "Select where you want to save your notes(Absolute path): " << "\n";
       getline(cin, selectedPath);
-      cout << "Path: " << selectedPath << "\n";
+      cout << "Does this look correct(y/n)? " << selectedPath << "\n";
+      string answer;
+      getline(cin, answer);
+      if (answer == "y") {
+        NotePath = selectedPath;
+      } else if(answer == "n") {
+        setup();
+      } else {
+        //Ask again 
+      }
     }
     
     vector<Note> parseVector(vector<string> lines) {
@@ -68,36 +76,33 @@ class NoteTaker {
       InOut::appendLineToFile(getNotePath(), note.toString());
     }
 
-    void listNotes (vector<Note> inArray) {
+    void listNotes (vector<Note> *inArray) {
       cout << "\n";
-      for (Note note : inArray) {
+      for (Note note : *inArray) {
         cout << note.index << " " << note.timeStamp.date() << " " << note.content << "\n";
       }
     }
 
-    vector<Note>  deleteNoteAtIndex (vector<Note> inArray, int index) {
-      vector<Note> localArray(inArray);
-      localArray.erase(localArray.begin() + index);
-      return localArray;
+    void deleteNoteAtIndex (vector<Note> *inArray, int index) {
+      inArray -> erase(inArray -> begin() + index);
     }
 
-    vector<Note>  deleteNote (vector<Note> inArray) {
+    void deleteNote (vector<Note> *inArray) {
       string input;
       cout << "Delete note nr: " << "\n";
       getline(cin, input);
       int index = stoi(input);
-      vector<Note> localArray = deleteNoteAtIndex(inArray, index);
-      return localArray;
-    }
-
-    void performDelete (vector<Note> inArray) {
-      noteArray = deleteNote(noteArray);
+      int lineCount = InOut::countLines(getNotePath());
+      if (index < lineCount) {
+        deleteNoteAtIndex(inArray, index);
+      } else {
+        cout << "Out of range. (max " << lineCount - 1 <<  ") Pick a different number." << "\n";
+        deleteNote(&noteArray);
+      }
     }
 
     void saveNotesToFile (vector<Note> *inArray, string path) {
-      for (Note note : *inArray) {
-        InOut::writeFile(getNotePath(), );
-      }
+      for (Note note : *inArray) {}
     }
 
     void readConfig () {
@@ -124,7 +129,7 @@ class NoteTaker {
       if (argCount == 1) {
         updateArray();
         makeNote();
-        listNotes(noteArray);
+        listNotes(&noteArray);
       } else {
         string mode = arguments[1];
         updateArray();
@@ -132,10 +137,10 @@ class NoteTaker {
         if (mode == "setup" || mode == "Setup") {
           setup();
         } else if (mode == "list" || mode == "-l" || mode == "--list") {
-          listNotes(noteArray);
+          listNotes(&noteArray);
         } else if (mode == "delete" || mode == "-rm") {
-          performDelete(noteArray);
-          listNotes(noteArray);
+          deleteNote(&noteArray);
+          listNotes(&noteArray);
         } else{
           cout << "Invalid option: " << mode << "\n";
         }
