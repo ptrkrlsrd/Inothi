@@ -18,11 +18,10 @@ using namespace boost::posix_time;
 class NoteTaker {
   public:
     vector <Note> noteArray;
-    string notePath;
+    Configuration config = Configuration("./config.cfg");
     
     string getNotePath () {
-      cout << notePath << endl;
-      return notePath.c_str();
+      return config.path.c_str();
     }
 
     vector<Note> parseVector(vector<string> lines) {
@@ -39,14 +38,14 @@ class NoteTaker {
     }
 
     void updateArray () {
-      vector <string> lines = InOut::readFile(notePath);
+      vector <string> lines = InOut::readFile(getNotePath());
       noteArray = parseVector(lines);
     }
 
     void makeNote () {
       Note note;
       string input;
-      int lineCount = InOut::countLines(notePath);
+      int lineCount = InOut::countLines(getNotePath());
       ptime now = boost::posix_time::microsec_clock::universal_time();
 
       cout << "New note" << "\n";
@@ -57,7 +56,7 @@ class NoteTaker {
       note.content = Utilities::capitalize(input);
       
       noteArray.push_back(note);
-      InOut::appendLineToFile(notePath, note.toString());
+      InOut::appendLineToFile(getNotePath(), note.toString());
     }
 
     void listNotes (vector<Note> *inArray) {
@@ -76,7 +75,7 @@ class NoteTaker {
       cout << "Delete note nr: " << "\n";
       getline(cin, input);
       int index = stoi(input);
-      int lineCount = InOut::countLines(notePath);
+      int lineCount = InOut::countLines(getNotePath());
       if (index < lineCount) {
         deleteNoteAtIndex(inArray, index);
       } else {
@@ -106,9 +105,6 @@ class NoteTaker {
     }
     
     void init (int argCount, char *arguments[]) {
-      Configuration config = Configuration("./config.cfg");
-      notePath = config.path;
-
       if (argCount == 1) {
         updateArray();
         makeNote();
