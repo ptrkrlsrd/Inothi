@@ -82,28 +82,25 @@ class NoteTaker {
         cout << "Out of range. (max " << lineCount - 1 <<  ") Pick a different number." << "\n";
         deleteNote(&noteArray);
       }
+      saveNotesToFile(inArray, config.path);
     }
 
     void saveNotesToFile (vector<Note> *inArray, string path) {
-      for (Note note : *inArray) {}
-    }
+      vector <string> linesToWrite;
+      int index = 0;
+      for (Note note : *inArray) {
+        note.index = index;
+        linesToWrite.push_back(note.toString());
+        index++;
+      }
 
-    void setup () {
-      string selectedPath;
-      cout << "Select where you want to save your notes(Absolute path): " << "\n";
-      getline(cin, selectedPath);
-      cout << "Does this look correct(y/n)? " << selectedPath << "\n";
-      string answer;
-      while (answer != "y") {
-        getline(cin, answer);
-        if (answer == "y") {
-        } else if(answer == "n") {
-          setup();
-        } else {
-        }
+      try {
+        InOut::writeFile(config.path, linesToWrite);
+      } catch(std::exception &e) {
+        throw e;
       }
     }
-    
+
     void init (int argCount, char *arguments[]) {
       if (argCount == 1) {
         updateArray();
@@ -113,14 +110,12 @@ class NoteTaker {
         string mode = arguments[1];
         updateArray();
 
-        if (mode == "setup" || mode == "Setup") {
-          setup();
-        } else if (mode == "list" || mode == "-l" || mode == "--list") {
+        if (mode == "list" || mode == "-l" || mode == "--list") {
           listNotes(&noteArray);
-        } else if (mode == "delete" || mode == "-rm") {
+        } else if (mode == "delete" || mode == "-d" || mode == "-rm") {
           deleteNote(&noteArray);
           listNotes(&noteArray);
-        } else{
+        } else {
           cout << "Invalid option: " << mode << "\n";
         }
       }
