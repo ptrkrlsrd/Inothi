@@ -6,6 +6,10 @@ using namespace libconfig;
 
 Configuration::Configuration (string filePath) {
   libconfig::Config cfgHandler;
+
+  //Set the default path to $HOME/.notes
+  path = Utilities::getHomeDir() + "/.notes.txt"; 
+
   try {
     cfgHandler.readFile(filePath.c_str());
   } catch(const FileIOException &fioex) {

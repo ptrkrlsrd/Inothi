@@ -115,6 +115,9 @@ class NoteTaker {
         } else if (mode == "delete" || mode == "-d" || mode == "-rm") {
           deleteNote(&noteArray);
           listNotes(&noteArray);
+        } else if (mode == "--help") {
+          cout << "Available commands: list(-l, --list), delete(-rm) & --help"
+          << endl;
         } else {
           cout << "Invalid option: " << mode << "\n";
         }
