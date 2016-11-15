@@ -4,6 +4,11 @@
 using namespace std;
 using namespace libconfig;
 
+/* *
+ * Initializer for the Configuration. 
+ * @param the filename of the configuration file.
+ * @return the configuration itself.
+ * */
 Configuration::Configuration (string filePath) {
   libconfig::Config cfgHandler;
 
