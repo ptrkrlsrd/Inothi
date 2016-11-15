@@ -9,4 +9,4 @@ A simple notetaker written in C++
 `path = "</desired/path/to/notes.txt>";`
 
 - Compile
-`clang++ -std=c++11 -stdlib=libc++  -lboost_date_time -lconfig++ source/NoteTaker.cpp -o NoteTaker`
+`make`
