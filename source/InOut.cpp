@@ -4,8 +4,6 @@
 #include <vector>
 
 using namespace std;
-#define GOOGLE_ARRAYSIZE(a) \
-    ((sizeof(a) / sizeof(*(a))) / static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
 namespace InOut {
   int countLines(string fileName) {

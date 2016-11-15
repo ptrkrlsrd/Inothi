@@ -1,4 +1,3 @@
-#include "NoteTaker.h"
 #include <ncurses.h>
 #include <iostream>
 #include <fstream>
@@ -7,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <boost/date_time.hpp>
+#include "Note.h"
 #include "Utilities.cpp"
 #include "Configuration.cpp"
 #include "InOut.cpp"
