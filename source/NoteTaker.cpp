@@ -7,40 +7,24 @@
 #include <string>
 #include <vector>
 #include <boost/date_time.hpp>
-#include <libconfig.h++>
 #include "Utilities.cpp"
+#include "Configuration.cpp"
 #include "InOut.cpp"
 
 using namespace std;
-using namespace libconfig;
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
 class NoteTaker {
   public:
     vector <Note> noteArray;
-    string NotePath;
+    string notePath;
     
     string getNotePath () {
-      return Utilities::getHomeDir() + "/.notes.txt";
+      cout << notePath << endl;
+      return notePath.c_str();
     }
 
-    void setup () {
-      string selectedPath;
-      cout << "Select where you want to save your notes(Absolute path): " << "\n";
-      getline(cin, selectedPath);
-      cout << "Does this look correct(y/n)? " << selectedPath << "\n";
-      string answer;
-      getline(cin, answer);
-      if (answer == "y") {
-        NotePath = selectedPath;
-      } else if(answer == "n") {
-        setup();
-      } else {
-        //Ask again 
-      }
-    }
-    
     vector<Note> parseVector(vector<string> lines) {
       vector<Note> localArray;
       for (string line : lines) {
@@ -55,14 +39,14 @@ class NoteTaker {
     }
 
     void updateArray () {
-      vector <string> lines = InOut::readFile(getNotePath());
+      vector <string> lines = InOut::readFile(notePath);
       noteArray = parseVector(lines);
     }
 
     void makeNote () {
       Note note;
       string input;
-      int lineCount = InOut::countLines(getNotePath());
+      int lineCount = InOut::countLines(notePath);
       ptime now = boost::posix_time::microsec_clock::universal_time();
 
       cout << "New note" << "\n";
@@ -70,10 +54,10 @@ class NoteTaker {
 
       note.index = lineCount;
       note.timeStamp = now;
-      note.content = input;
+      note.content = Utilities::capitalize(input);
       
       noteArray.push_back(note);
-      InOut::appendLineToFile(getNotePath(), note.toString());
+      InOut::appendLineToFile(notePath, note.toString());
     }
 
     void listNotes (vector<Note> *inArray) {
@@ -92,7 +76,7 @@ class NoteTaker {
       cout << "Delete note nr: " << "\n";
       getline(cin, input);
       int index = stoi(input);
-      int lineCount = InOut::countLines(getNotePath());
+      int lineCount = InOut::countLines(notePath);
       if (index < lineCount) {
         deleteNoteAtIndex(inArray, index);
       } else {
@@ -105,26 +89,25 @@ class NoteTaker {
       for (Note note : *inArray) {}
     }
 
-    void readConfig () {
-      Config cfg;
-      try {
-        cfg.readFile("notetaker.cfg");
-      } catch(const FileIOException &fioex) {
-        std::cerr << "I/O error while reading file." << "\n";
-      } catch(const ParseException &pex) {
-        std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-          << " - " << pex.getError() << "\n";
-      }
-
-      try {
-        string path = cfg.lookup("path");
-      } catch(const SettingNotFoundException &nfex) {
-        cerr << "No 'path' setting in configuration file." << "\n";
+    void setup () {
+      string selectedPath;
+      cout << "Select where you want to save your notes(Absolute path): " << "\n";
+      getline(cin, selectedPath);
+      cout << "Does this look correct(y/n)? " << selectedPath << "\n";
+      string answer;
+      while (answer != "y") {
+        getline(cin, answer);
+        if (answer == "y") {
+        } else if(answer == "n") {
+          setup();
+        } else {
+        }
       }
     }
-
+    
     void init (int argCount, char *arguments[]) {
-      readConfig();
+      Configuration config = Configuration("./config.cfg");
+      notePath = config.path;
 
       if (argCount == 1) {
         updateArray();

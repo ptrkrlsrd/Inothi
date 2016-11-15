@@ -38,6 +38,11 @@ namespace Utilities {
     split(inString, delimiter, elements);
     return elements;
   }
+
+  string capitalize (string inString) {
+    inString[0] = toupper(inString[0]);
+    return inString;
+  }
   
   string getHomeDir () {
     const char *homedir;
