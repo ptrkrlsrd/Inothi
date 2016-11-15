@@ -1,6 +1,10 @@
 # NoteTaker
 A simple notetaker written in C++
 
+## Requirements
+- libconfig
+- boost
+
 ## Usage
 
 - Clone this repo
