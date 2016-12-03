@@ -23,7 +23,7 @@ class NoteTaker {
     /* *
      * Get the path to the notes 
      * @return Returns the path to the notes. 
-     * */
+    * */
     string getNotePath () {
       return config.path.c_str();
     }
@@ -58,20 +58,28 @@ class NoteTaker {
      * Make a new note and append it to the note file. 
     * */
     void makeNote () {
-      Note note;
-      string input;
       int lineCount = InOut::countLines(getNotePath());
+      string input;
       ptime now = boost::posix_time::microsec_clock::universal_time();
 
-      cout << "New note" << "\n";
-      getline(cin, input);
+      Utilities::getUserInput("New Note", &input);
+      time_facet* facet = new time_facet();
+      facet->format("%H:%M");
+      stringstream stream;
+      stream.imbue(locale(locale::classic(), facet));
+      stream << now;
+      cout << stream.str(); 
 
-      note.index = lineCount;
+      Note note;
       note.timeStamp = now;
+      note.index = lineCount;
       note.content = Utilities::capitalize(input);
+      appendNoteToNotes(note);
+    }
 
-      noteArray.push_back(note);
-      InOut::appendLineToFile(getNotePath(), note.toString());
+    void appendNoteToNotes(Note note) {
+      noteArray.push_back(note); //Add to the notearray
+      InOut::appendLineToFile(getNotePath(), note.toString()); //Write to the file
     }
 
     /* *
@@ -130,7 +138,7 @@ class NoteTaker {
 
       try {
         InOut::writeFile(config.path, linesToWrite);
-      } catch(std::exception &e) {
+      } catch(exception &e) {
         throw e;
       }
     }
@@ -138,7 +146,7 @@ class NoteTaker {
     /* *
      * Initializer for the NoteTaker.
      * Handles the flags and the configuration file.
-     * @param The count of arguments. 
+     * @param The count of arguments.
      * @param The arguments. 
     * */
     void init (int argCount, char *arguments[]) {

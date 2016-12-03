@@ -1,5 +1,6 @@
 #include <ctime>
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <vector>
 #include <unistd.h>
@@ -50,5 +51,10 @@ namespace Utilities {
       homedir = getpwuid(getuid())->pw_dir;
     }
     return homedir;
+  }
+
+  void getUserInput (string question, string *answer) {
+    cout << question << endl;
+    getline(cin, *answer);
   }
 };
