@@ -1,5 +1,5 @@
-# NoteTaker
-A simple notetaker written in C++
+# Inothi
+A simple cli program for writing short notes written in C++
 
 ## Requirements
 - libconfig
