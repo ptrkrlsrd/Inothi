@@ -1,7 +1,6 @@
 /**
 *    InOut.cpp
 *    Purpose: Perform In/Out operations
-*
 *    @author Petter Karlsrud 
 *    @version 1.0 15/11/16 
 **/
