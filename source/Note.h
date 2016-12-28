@@ -13,6 +13,10 @@ class Note {
     vector<string> tags;
     
     string toString() {
+      return to_string(index) + ") - @ " + to_simple_string(timeStamp) + content;
+    }
+
+    string toStorableString() {
       return to_string(index) + '#' + to_simple_string(timeStamp) + '#' + content;
     }
 
@@ -20,7 +24,7 @@ class Note {
     Note (int, ptime, string); 
 };
 Note::Note (){};
-Note::Note (int _index, ptime _timeStamp, string _content)  {
+Note::Note (int _index, ptime _timeStamp, string _content) {
   index = _index;
   timeStamp = _timeStamp;
   content = _content;

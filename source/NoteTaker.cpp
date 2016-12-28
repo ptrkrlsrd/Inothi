@@ -30,7 +30,7 @@ class NoteTaker {
    * Get the path to the notes
    * @return Returns the path to the notes.
   * */
-  string getNotePath() { return config.path.c_str(); }
+  string getNotePath(Configuration *inConfig) { return inConfig->path.c_str(); }
 
   /* *
    * Create an vector of Notes from a vector of strings.
@@ -45,6 +45,7 @@ class NoteTaker {
       int index = stoi(lines[0]);
       ptime timeStamp = Utilities::timeFromString(lines[1]);
       string content = lines[2];
+
       Note note = Note(index,timeStamp,content);
       localArray.push_back(note);
     }
@@ -55,7 +56,7 @@ class NoteTaker {
    * Read the note file and update the noteArray
   * */
   vector<Note> fetchNotes() {
-    vector<string> lines = InOut::readFile(getNotePath());
+    vector<string> lines = InOut::readFile(getNotePath(&config));
     return parseVector(lines);
   }
 
@@ -63,7 +64,7 @@ class NoteTaker {
    * Make a new note and append it to the note file.
   * */
   Note makeNote() {
-    int lineCount = InOut::countLines(getNotePath());
+    int lineCount = InOut::countLines(getNotePath(&config));
     string noteContent;
     ptime now = boost::posix_time::microsec_clock::universal_time();
 
@@ -91,7 +92,7 @@ class NoteTaker {
   void listNotes(vector<Note> *inArray) {
     cout << "\n";
     for (Note note : *inArray) {
-      cout << note.toString() << "\n";
+      cout << note.toString() << "\n\n";
     }
   }
 
@@ -118,7 +119,7 @@ class NoteTaker {
       deleteAll(&noteArray);
     } else {
       int index = stoi(input);
-      int lineCount = InOut::countLines(getNotePath());
+      int lineCount = InOut::countLines(getNotePath(&config));
       if (index < lineCount) {
         deleteNoteAtIndex(inArray, index);
       } else {
@@ -144,7 +145,7 @@ class NoteTaker {
     int index = 0;
     for (Note note : *inArray) {
       note.index = index;
-      linesToWrite.push_back(note.toString());
+      linesToWrite.push_back(note.toStorableString());
       index++;
     }
 
@@ -168,8 +169,7 @@ class NoteTaker {
       listNotes(&noteArray);
       saveNotesToFile(&noteArray, config.path);
     } else if (mode == "--help") {
-      cout << "Available commands: list(-l, --list), delete(-rm) & --help"
-           << endl;
+      cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
     } else {
       cout << "Invalid option: " << mode << "\n";
     }
@@ -189,7 +189,7 @@ class NoteTaker {
       Note newNote = makeNote();
       appendNoteToNotes(newNote, &noteArray);
 
-      InOut::appendLineToFile(getNotePath(),
+      InOut::appendLineToFile(getNotePath(&config),
       newNote.toString());  // Write to the file
 
       listNotes(&noteArray);
