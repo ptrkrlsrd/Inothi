@@ -134,7 +134,7 @@ class NoteTaker {
     void listNotes(vector<Note> *inArray) {
       cout << "\n";
       for (Note note : *inArray) {
-        cout << note.toString() << "\n\n";
+        cout  << note.toDetailedString() << "\n\n";
       }
     }
 
