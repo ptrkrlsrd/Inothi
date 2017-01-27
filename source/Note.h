@@ -12,12 +12,12 @@ class Note {
     ptime timeStamp;
     vector<string> tags;
     
-    string toString() {
-      return to_string(index) + ") - @ " + to_simple_string(timeStamp) + content;
-    }
-
     string toStorableString() {
       return to_string(index) + '#' + to_simple_string(timeStamp) + '#' + content;
+    }
+
+    string toString() {
+      return to_string(index) + ". " + content;
     }
 
     Note ();
