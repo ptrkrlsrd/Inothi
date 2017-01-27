@@ -27,6 +27,15 @@ class NoteTaker {
     Configuration config = Configuration("./config.cfg");
 
     /* *
+     * Constructor for the Notetaker
+     * @param count of arguments
+     * @param arguments
+     * */
+    NoteTaker (int argCount, char *arguments[]) {
+      init(argCount, arguments);
+    }
+
+    /* *
      * Initializer for the NoteTaker.
      * Handles the flags and the configuration file.
      * @param count of arguments
@@ -46,12 +55,28 @@ class NoteTaker {
     }
 
     /* *
-     * Constructor for the Notetaker
-     * @param count of arguments
+     * Handle the arguments
      * @param arguments
      * */
-    NoteTaker (int argCount, char *arguments[]) {
-      init(argCount, arguments);
+    void handleArguments(char *arguments[]) {
+      string mode = arguments[1];
+
+      if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
+        listNotes(&noteArray);
+      } else if (mode == "-t") {
+        createNote(true, true);
+      } else if (mode == "delete" || mode == "-rm") {
+        deleteNote(&noteArray);
+        listNotes(&noteArray);
+        saveNotesToFile(&noteArray, config.path);
+      } else if (mode == "--clear") {
+        deleteAll(&noteArray);
+        saveNotesToFile(&noteArray, config.path);
+      } else if (mode == "--help") {
+        cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
+      } else {
+        cout << "Invalid option: " << mode << "\n";
+      }
     }
 
     /* *
@@ -154,6 +179,7 @@ class NoteTaker {
      * */
     void deleteNote(vector<Note> *inArray) {
       string input;
+      listNotes(inArray);
       cout << "Delete note nr: \n";
       getline(cin, input);
 
@@ -195,31 +221,6 @@ class NoteTaker {
         InOut::writeFile(config.path, linesToWrite);
       } catch (exception &e) {
         throw e;
-      }
-    }
-
-    /* *
-     * Handle the arguments
-     * @param arguments
-     * */
-    void handleArguments(char *arguments[]) {
-      string mode = arguments[1];
-
-      if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
-        listNotes(&noteArray);
-      } else if (mode == "-t") {
-        createNote(true, true);
-      } else if (mode == "delete" || mode == "-rm") {
-        deleteNote(&noteArray);
-        listNotes(&noteArray);
-        saveNotesToFile(&noteArray, config.path);
-      } else if (mode == "--clear") {
-        deleteAll(&noteArray);
-        saveNotesToFile(&noteArray, config.path);
-      } else if (mode == "--help") {
-        cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
-      } else {
-        cout << "Invalid option: " << mode << "\n";
       }
     }
 };
