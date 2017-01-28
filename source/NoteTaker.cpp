@@ -4,14 +4,15 @@
 *    @author Petter Karlsrud
 *    @version 1.0 15/11/1
 **/
-#include <ncurses.h>
+#include <boost/date_time.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <iostream>
 #include <fstream>
 #include <ctime>
 #include <locale>
 #include <string>
 #include <vector>
-#include <boost/date_time.hpp>
 #include "Note.h"
 #include "Utilities.cpp"
 #include "Configuration.cpp"
@@ -24,8 +25,7 @@ using namespace boost::posix_time;
 class NoteTaker {
   public:
     vector<Note> noteArray;
-    Configuration config = Configuration("./config.cfg");
-
+    Configuration config;
     /* *
      * Constructor for the Notetaker
      * @param count of arguments
@@ -42,11 +42,16 @@ class NoteTaker {
      * @param arguments
      * */
     void init(int argCount, char *arguments[]) {
+      config = Configuration("./config.cfg");
       noteArray = fetchNotes();
       /*If theres just one argument(i.e the command),
         then create a new note*/
       if (argCount == 1) {
-        createNote(true, true);
+        Note note = newNote();
+        appendNoteToNotes(note, &noteArray);
+        InOut::appendLineToFile(getNotePath(&config),
+            note.toStorableString());  // Write to the file
+        listNotes(&noteArray);
       } else {
         /*If there are more than one argument,
           then handle the arguments*/
@@ -64,7 +69,11 @@ class NoteTaker {
       if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
         listNotes(&noteArray);
       } else if (mode == "-t") {
-        createNote(true, true);
+        Note note = newNote();
+        appendNoteToNotes(note, &noteArray);
+        InOut::appendLineToFile(getNotePath(&config),
+            note.toStorableString());  // Write to the file
+        listNotes(&noteArray);
       } else if (mode == "delete" || mode == "-rm") {
         deleteNote(&noteArray);
         listNotes(&noteArray);
@@ -114,18 +123,11 @@ class NoteTaker {
       return parseVector(lines);
     }
 
-    void createNote(bool shouldSaveNote, bool shouldListNotes) {
-      Note note = newNote();
-      appendNoteToNotes(note, &noteArray);
-
-      if (shouldSaveNote) {
-        InOut::appendLineToFile(getNotePath(&config),
-            note.toStorableString());  // Write to the file
-      }
-
-      if (shouldListNotes) {
-        listNotes(&noteArray);
-      }
+    string askUser(string question) {
+      string input = "";
+      cout << question << "\n";
+      getline(cin, input);
+      return input;
     }
 
     /*  *
@@ -145,7 +147,23 @@ class NoteTaker {
 
       string content = Utilities::capitalize(noteContent);
       Note note = Note(lineCount, now, content);
+
+      string input = askUser("Do you want to add tags? <y/n>\n");
+      if (input == "y" || input == "yes") {
+        note.tags = createTags();
+      }
+
       return note;
+    }
+
+    vector<string> createTags() {
+      string tags = askUser("Please enter your tags.\n(Ex: tag, tag, another tag)\n");
+      boost::erase_all(tags, " ");
+      vector<string> splitTags = Utilities::split(tags, ',');
+      for (string i : splitTags) {
+        cout << i << endl;
+      }
+      return splitTags;
     }
 
     void appendNoteToNotes(Note note, vector<Note> *inArray) {
@@ -218,7 +236,7 @@ class NoteTaker {
       }
 
       try {
-        InOut::writeFile(config.path, linesToWrite);
+        InOut::writeFile(path, linesToWrite);
       } catch (exception &e) {
         throw e;
       }

@@ -44,7 +44,7 @@ namespace Utilities {
     inString[0] = toupper(inString[0]);
     return inString;
   }
-  
+
   string getHomeDir () {
     const char *homedir;
     if ((homedir = getenv("HOME")) == NULL) {

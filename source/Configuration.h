@@ -6,4 +6,5 @@ class Configuration {
   public:
     string path;
     Configuration(string);
+    Configuration();
 };
