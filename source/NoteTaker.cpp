@@ -43,7 +43,7 @@ class NoteTaker {
      * */
     void init(int argCount, char *arguments[]) {
       config = Configuration("./config.cfg");
-      noteArray = fetchNotes();
+      noteArray = readNotesFromFile();
       /*If theres just one argument(i.e the command),
         then create a new note*/
       if (argCount == 1) {
@@ -118,7 +118,7 @@ class NoteTaker {
     /* *
      * Read the note file and update the noteArray
      * */
-    vector<Note> fetchNotes() {
+    vector<Note> readNotesFromFile() {
       vector<string> lines = InOut::readFile(getNotePath(&config));
       return parseVector(lines);
     }
