@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "json.hpp"
 
 using namespace std;
 
@@ -79,4 +80,14 @@ namespace InOut {
       throw e;
     }
   }    
+  /* *
+   * Read the json file specified in the path
+   * @param the filename of the file.
+   * */
+  nlohmann::json readJsonFile(string path) {
+    nlohmann::json jsonStruct;
+    std::ifstream jsonFile(path);
+    jsonFile >> jsonStruct;
+    return jsonStruct;
+  }
 };

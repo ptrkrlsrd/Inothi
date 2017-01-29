@@ -18,9 +18,7 @@ A simple cli program for writing short notes written in C++
 </li>
 <li><a href="#sec-1-5">1.5. Usage</a>
 <ul>
-<li><a href="#sec-1-5-1">1.5.1. Create a new note</a></li>
-<li><a href="#sec-1-5-2">1.5.2. List notes</a></li>
-<li><a href="#sec-1-5-3">1.5.3. Delete a note</a></li>
+<li><a href="#sec-1-5-1">1.5.1. Available commands</a></li>
 </ul>
 </li>
 </ul>
@@ -56,21 +54,32 @@ A simple cli program for writing short notes written in C++
 
 ## Usage
 
+### Available commands
+
 Most arguments should be familiar if you're using a unix based OS.
 
-### Create a new note
+1.  Create a new note
 
--   **Command:** `inothi` (without any arguments)
--   Enter the content of the note.
--   Once you're done, hit enter.
--   Next you'll be prompted to choose if you want to add tags or not.
-    -   If you do, enter ***y*** if not enter ***n***.
+    -   **Usage:** `inothi` (without any arguments)
+    -   Enter the content of the note.
+    -   Once you're done, hit enter.
+    -   Next you'll be prompted to choose if you want to add tags or not.
+        -   If you do, enter ***y*** if not enter ***n***.
 
-### List notes
+2.  Delete a note (-rm)
 
--   **Command:** `inothi -ls`
+    -   **Usage:** `inothi -rm`
+    -   Select the note ID of the note you want to delete.
 
-### Delete a note
+3.  List notes (-ls)
 
--   **Command:** `inothi -rm`
--   Select the note ID of the note you want to delete.
+    -   **Usage:** `inothi -ls`
+
+4.  Show available commands (&#x2013;help)
+
+    -   **Usage:** `inothi --help`
+
+5.  Removes all notes (&#x2013;clear)
+
+    -   **Usage:** `inothi --clear`
+    -   **Warning:** This will remove all your notes
