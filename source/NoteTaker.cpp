@@ -27,6 +27,7 @@ class NoteTaker {
   public:
     vector<Note> noteArray;
     Configuration config;
+
     /* *
      * Constructor for the Notetaker
      * @param count of arguments
@@ -101,7 +102,6 @@ class NoteTaker {
      * @return Returns a vector of notes.
      * */
     vector<Note> parseVector(vector<string> lines) {
-
       vector<Note> localArray;
       for (string line : lines) {
         vector<string> lines = Utilities::split(line, '#');
@@ -118,14 +118,17 @@ class NoteTaker {
 
     /* *
      * Read the note file and update the noteArray
+     * @return Returns a vector of notes.
      * */
     vector<Note> readNotesFromFile(string path) {
       vector<string> lines = InOut::readFile(path);
+      vector<Note> outNotes;
+
       std::ifstream inFile(path);
       nlohmann::json fileJson;
       inFile >> fileJson;
       vector<nlohmann::json> notes = fileJson["notes"];
-      vector<Note> outNotes;
+
       for (nlohmann::json i : notes) {
         Note note;
         string timeStampString = i["date"];
@@ -147,9 +150,10 @@ class NoteTaker {
     return input;
   }
 
-  /*  *
-  *  * Make a new note and append it to the note file.
-  *  */
+ /* *
+  * Make a new note and append it to the note file.
+  * @return Returns a new Note 
+  * */
   Note newNote() {
     int lineCount = InOut::countLines(getNotePath(&config));
     string noteContent;
@@ -174,13 +178,14 @@ class NoteTaker {
     return note;
   }
 
+  /* *
+   * Create new tags
+   * @return a vector of string
+   * */
   vector<string> createTags() {
     string tags = askUser("Please enter your tags.\n(Ex: tag, tag, another tag)\n");
     boost::erase_all(tags, " ");
     vector<string> splitTags = Utilities::split(tags, ',');
-    for (string i : splitTags) {
-      cout << i << endl;
-    }
     return splitTags;
   }
 
