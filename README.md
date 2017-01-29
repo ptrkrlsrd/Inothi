@@ -38,6 +38,8 @@ A simple cli program for writing short notes written in C++
 -   libconfig
 -   boost
 
+-[ nhlohmann/json](https://github.com/nlohmann/json) 
+
 ## Installation
 
 -   Get the required libraries
@@ -50,7 +52,7 @@ A simple cli program for writing short notes written in C++
 
 ### Example:
 
-`path = "~/Notes/notes.txt";`
+`path = "~/Notes/notes.json";`
 
 ## Usage
 
