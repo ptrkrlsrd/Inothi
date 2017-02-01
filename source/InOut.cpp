@@ -1,8 +1,8 @@
 /**
 *    InOut.cpp
 *    Purpose: Perform In/Out operations
-*    @author Petter Karlsrud 
-*    @version 1.0 15/11/16 
+*    @author Petter Karlsrud
+*    @version 1.0 15/11/16
 **/
 
 #include <ncurses.h>
@@ -14,6 +14,15 @@
 using namespace std;
 
 namespace InOut {
+  /* *
+   * Check if a file exists
+   * @param the filename of the file.
+   * @return bool
+   * */
+  bool checkIfFileExists(string fileName) {
+    ifstream infile(fileName);
+    return infile.good();
+  }
   /* *
    * Counts the lines of a file.
    * @param the filename of the file.
@@ -27,9 +36,9 @@ namespace InOut {
   }
 
   /* *
-   * Read a file and return the lines as a vector 
+   * Read a file and return the lines as a vector
    * @param the filename of the file.
-   * @return the lines as a vector of strings. 
+   * @return the lines as a vector of strings.
    * */
   vector<string> readFile(string fileName) {
     vector<string> localArray;
@@ -46,9 +55,9 @@ namespace InOut {
     }
     return localArray;
   }
-  
+
   /* *
-   * Append a line to a file 
+   * Append a line to a file
    * @param the filename of the file.
    * */
   void appendLineToFile(string fileName, string line) {
@@ -63,7 +72,7 @@ namespace InOut {
   }
 
   /* *
-   * Write a file by overwriting. 
+   * Write a file by overwriting.
    * @param the filename of the file.
    * @param the lines you want to write.
    * */
@@ -79,7 +88,7 @@ namespace InOut {
     } catch (const ifstream::failure& e){
       throw e;
     }
-  }    
+  }
   /* *
    * Read the json file specified in the path
    * @param the filename of the file.

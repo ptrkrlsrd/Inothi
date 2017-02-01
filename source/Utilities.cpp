@@ -21,7 +21,7 @@ namespace Utilities {
     return string(output);
   }
 
-  ptime timeFromString (string &inString) {
+  boost::posix_time::ptime timeFromString (string &inString) {
     return time_from_string(inString);
   }
 
@@ -51,6 +51,13 @@ namespace Utilities {
       homedir = getpwuid(getuid())->pw_dir;
     }
     return homedir;
+  }
+
+  string getUserInput (string question) {
+    string input = "";
+    cout << question << "\n";
+    getline(cin, input);
+    return input;
   }
 
   void getUserInput (string question, string *answer) {
