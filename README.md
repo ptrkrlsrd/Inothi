@@ -1,4 +1,4 @@
-# Inothi
+![](http://helvetia.design/INOTHI.png)
 
 A simple cli program for writing short notes written in C++
 
