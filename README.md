@@ -77,11 +77,11 @@ Most arguments should be familiar if you're using a unix based OS.
 
     -   **Usage:** `inothi -ls`
 
-4.  Show available commands (&#x2013;help)
+4.  Show available commands (--help)
 
     -   **Usage:** `inothi --help`
 
-5.  Removes all notes (&#x2013;clear)
+5.  Removes all notes (--clear)
 
     -   **Usage:** `inothi --clear`
     -   **Warning:** This will remove all your notes
