@@ -52,7 +52,7 @@ A simple cli program for writing short notes written in C++
 
 ### Example:
 
-`path = "~/Notes/notes.json";`
+`path = "/Users/username/Notes/notes.json";`
 
 ## Usage
 
