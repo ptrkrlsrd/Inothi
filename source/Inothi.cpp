@@ -48,41 +48,6 @@ class Inothi {
         InOut::createNewJsonFile(config.path);
       }
       noteArray = readNotesFromFile(config.path);
-
-      /*If theres just one argument(i.e the command),
-        then create a new note*/
-      if (argCount == 1) {
-        Note note = newNote();
-        appendNoteToNotes(note, &noteArray);
-        saveNotesToFile(config.path);
-        listNotes();
-      } else {
-        /*If there are more than one argument,
-          then handle the arguments*/
-        handleArguments(arguments);
-      }
-    }
-
-    /* *
-     * Handle the arguments
-     * @param arguments
-     * */
-    void handleArguments(char *arguments[]) {
-      string mode = arguments[1];
-
-      if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
-        listNotes();
-      } else if (mode == "delete" || mode == "-rm") {
-        deleteNote();
-        listNotes();
-        saveNotesToFile(config.path);
-      } else if (mode == "--clear") {
-        deleteAll();
-      } else if (mode == "--help") {
-        cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
-      } else {
-        cout << "Invalid option: " << mode << "\n";
-      }
     }
 
     /* *
@@ -154,8 +119,8 @@ class Inothi {
       return splitTags;
     }
 
-    void appendNoteToNotes(Note note, vector<Note> *inArray) {
-      inArray->push_back(note);  // Add to the notearray
+    void appendNoteToNotes(Note note) {
+      noteArray.push_back(note);  // Add to the notearray
     }
 
     /* *
@@ -217,15 +182,14 @@ class Inothi {
      * */
     void deleteAll() {
       noteArray.clear();
-      saveNotesToFile(config.path);
+      saveNotesToFile();
     }
 
     /* *
      * Save a vector of notes to a path.
-     * @param path to the file
      * */
-    void saveNotesToFile(string path) {
-      nlohmann::json jsonFile = InOut::readJsonFile(path);
+    void saveNotesToFile() {
+      nlohmann::json jsonFile = InOut::readJsonFile(config.path);
       vector<nlohmann::json> jsonNotesArray;
 
       for (Note i : noteArray) {
@@ -237,7 +201,7 @@ class Inothi {
         jsonNotesArray.push_back(object);
       }
 
-      std::ofstream o(path);
+      std::ofstream o(config.path);
       jsonFile["notes"] = jsonNotesArray;
       o << std::setw(4) << jsonFile << std::endl;
     }
@@ -246,6 +210,33 @@ class Inothi {
 int main(int argc, char *argv[]) {
   //Initialize the notetaker class
   Inothi instance = Inothi(argc, argv);
+
+  if (argc == 1) {
+    /*If theres just one argument(i.e the command),
+      then create a new note*/
+    Note note = instance.newNote();
+    instance.appendNoteToNotes(note);
+    instance.saveNotesToFile();
+    instance.listNotes();
+  } else {
+    /*If there are more than one argument,
+      then handle the arguments*/
+    string mode = argv[1];
+
+    if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
+      instance.listNotes();
+    } else if (mode == "delete" || mode == "-rm") {
+      instance.deleteNote();
+      instance.listNotes();
+      instance.saveNotesToFile();
+    } else if (mode == "--clear") {
+      instance.deleteAll();
+    } else if (mode == "--help") {
+      cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
+    } else {
+      cout << "Invalid option: " << mode << "\n";
+    }
+  }
   return 0;
 }
 
