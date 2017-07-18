@@ -23,7 +23,7 @@ using namespace std;
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
-class NoteTaker {
+class Inothi {
   public:
     vector<Note> noteArray;
     Configuration config;
@@ -33,12 +33,12 @@ class NoteTaker {
      * @param count of arguments
      * @param arguments
      * */
-    NoteTaker (int argCount, char *arguments[]) {
+    Inothi (int argCount, char *arguments[]) {
       init(argCount, arguments);
     }
 
     /* *
-     * Initializer for the NoteTaker.
+     * Initializer for the Inothi.
      * Handles the flags and the configuration file.
      * @param count of arguments
      * @param arguments
@@ -62,17 +62,6 @@ class NoteTaker {
           then handle the arguments*/
         handleArguments(arguments);
       }
-    }
-
-    /* *
-     * Creates a new json fil at the specified path
-     * @param the filename of the file.
-     * */
-    void createNewJsonFile (string path) {
-      nlohmann::json jsonStruct = nlohmann::json::object();
-      jsonStruct["notes"] = nlohmann::json::array();
-      std::ofstream o(path);
-      o << std::setw(4) << jsonStruct << std::endl;
     }
 
     /* *
@@ -102,6 +91,17 @@ class NoteTaker {
       } else {
         cout << "Invalid option: " << mode << "\n";
       }
+    }
+
+    /* *
+     * Creates a new json fil at the specified path
+     * @param the filename of the file.
+     * */
+    void createNewJsonFile (string path) {
+      nlohmann::json jsonStruct = nlohmann::json::object();
+      jsonStruct["notes"] = nlohmann::json::array();
+      std::ofstream o(path);
+      o << std::setw(4) << jsonStruct << std::endl;
     }
 
     /* *
@@ -258,7 +258,7 @@ class NoteTaker {
 
 int main(int argc, char *argv[]) {
   //Initialize the notetaker class
-  NoteTaker noteTaker = NoteTaker(argc, argv);
+  Inothi noteTaker = Inothi(argc, argv);
   return 0;
 }
 
