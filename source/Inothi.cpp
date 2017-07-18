@@ -46,7 +46,7 @@ class Inothi {
     void init(int argCount, char *arguments[]) {
       config = Configuration("./config.cfg");
       if (!InOut::checkIfFileExists(config.path)) {
-        createNewJsonFile(config.path);
+        InOut::createNewJsonFile(config.path);
       }
       noteArray = readNotesFromFile(config.path);
 
@@ -73,12 +73,6 @@ class Inothi {
 
       if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
         listNotes(&noteArray);
-      } else if (mode == "-t") {
-        Note note = newNote();
-        appendNoteToNotes(note, &noteArray);
-        InOut::appendLineToFile(getNotePath(&config),
-            note.toStorableString());  // Write to the file
-        listNotes(&noteArray);
       } else if (mode == "delete" || mode == "-rm") {
         deleteNote(&noteArray);
         listNotes(&noteArray);
@@ -91,17 +85,6 @@ class Inothi {
       } else {
         cout << "Invalid option: " << mode << "\n";
       }
-    }
-
-    /* *
-     * Creates a new json fil at the specified path
-     * @param the filename of the file.
-     * */
-    void createNewJsonFile (string path) {
-      nlohmann::json jsonStruct = nlohmann::json::object();
-      jsonStruct["notes"] = nlohmann::json::array();
-      std::ofstream o(path);
-      o << std::setw(4) << jsonStruct << std::endl;
     }
 
     /* *
@@ -141,7 +124,7 @@ class Inothi {
      * @return Returns a new Note
      * */
     Note newNote() {
-      int lineCount = InOut::countLines(getNotePath(&config));
+      int lineCount = countNotes(&noteArray);
       ptime now = boost::posix_time::microsec_clock::universal_time();
       string noteContent = Utilities::getUserInput("New Note");
       time_facet *facet = new time_facet();
@@ -189,6 +172,14 @@ class Inothi {
     }
 
     /* *
+     * Count the notes in a vector of notes.
+     * @param vector of notes
+     * */
+    int countNotes(vector<Note> *inArray) {
+      return inArray->size();
+    }
+
+    /* *
      * Delete a note from a vector of notes by index.
      * @param vector of notes
      * @param index you want to remove
@@ -212,7 +203,9 @@ class Inothi {
         deleteAll(&noteArray);
       } else {
         int index = stoi(input);
-        int lineCount = InOut::countLines(getNotePath(&config));
+        string notePath = getNotePath(&config);
+        int lineCount = countNotes(&noteArray);
+
         if (index < lineCount) {
           deleteNoteAtIndex(inArray, index);
         } else {
