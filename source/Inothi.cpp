@@ -54,8 +54,8 @@ class Inothi {
       if (argCount == 1) {
         Note note = newNote();
         appendNoteToNotes(note, &noteArray);
-        saveNotesToFile(&noteArray, config.path);
-        listNotes(&noteArray);
+        saveNotesToFile(config.path);
+        listNotes();
       } else {
         /*If there are more than one argument,
           then handle the arguments*/
@@ -71,14 +71,13 @@ class Inothi {
       string mode = arguments[1];
 
       if (mode == "list" || mode == "-l" || mode == "-ls" || mode == "--list") {
-        listNotes(&noteArray);
+        listNotes();
       } else if (mode == "delete" || mode == "-rm") {
-        deleteNote(&noteArray);
-        listNotes(&noteArray);
-        saveNotesToFile(&noteArray, config.path);
+        deleteNote();
+        listNotes();
+        saveNotesToFile(config.path);
       } else if (mode == "--clear") {
-        deleteAll(&noteArray);
-        saveNotesToFile(&noteArray, config.path);
+        deleteAll();
       } else if (mode == "--help") {
         cout << "Available commands: list(-l, --list), delete(-rm) & --help\n";
       } else {
@@ -123,7 +122,7 @@ class Inothi {
      * @return Returns a new Note
      * */
     Note newNote() {
-      int lineCount = countNotes(&noteArray);
+      int lineCount = countNotes();
       ptime now = boost::posix_time::microsec_clock::universal_time();
       string noteContent = Utilities::getUserInput("New Note");
       time_facet *facet = new time_facet();
@@ -161,57 +160,53 @@ class Inothi {
 
     /* *
      * List all the notes in a vector of notes.
-     * @param vector of notes
      * */
-    void listNotes(vector<Note> *inArray) {
+    void listNotes() {
       cout << "\n";
-      for (Note note : *inArray) {
+      for (Note note : noteArray) {
         cout  << note.toDetailedString() << "\n\n";
       }
     }
 
     /* *
      * Count the notes in a vector of notes.
-     * @param vector of notes
      * */
-    int countNotes(vector<Note> *inArray) {
-      return inArray->size();
+    int countNotes() {
+      return noteArray.size();
     }
 
     /* *
      * Delete a note from a vector of notes by index.
-     * @param vector of notes
      * @param index you want to remove
      * */
-    void deleteNoteAtIndex(vector<Note> *inArray, int index) {
-      inArray->erase(inArray->begin() + index);
+    void deleteNoteAtIndex(int index) {
+      noteArray.erase(noteArray.begin() + index);
     }
 
     /* *
      * Perform a delete operation
      * by asking the user which file to delete.
-     * @param takes a vector of notes
      * */
-    void deleteNote(vector<Note> *inArray) {
+    void deleteNote() {
       string input;
-      listNotes(inArray);
+      listNotes();
       cout << "Delete note nr: \n";
       getline(cin, input);
 
       if (input == "all") {
-        deleteAll(&noteArray);
+        deleteAll();
       } else {
         int index = stoi(input);
         string notePath = getNotePath(&config);
-        int lineCount = countNotes(&noteArray);
+        int lineCount = countNotes();
 
         if (index < lineCount) {
-          deleteNoteAtIndex(inArray, index);
+          deleteNoteAtIndex(index);
         } else {
           int correctedCount = lineCount - 1;
           cout << "Out of range. (max " << correctedCount
             << ") Pick a different number.\n";
-          deleteNote(&noteArray);
+          deleteNote();
         }
       }
     }
@@ -220,16 +215,16 @@ class Inothi {
      * Delete all item in an array
      * @param vector of notes
      * */
-    void deleteAll(vector<Note> *inArray) {
-      inArray -> clear();
+    void deleteAll() {
+      noteArray.clear();
+      saveNotesToFile(config.path);
     }
 
     /* *
      * Save a vector of notes to a path.
-     * @param vector of notes
      * @param path to the file
      * */
-    void saveNotesToFile(vector<Note> *inArray, string path) {
+    void saveNotesToFile(string path) {
       nlohmann::json jsonFile = InOut::readJsonFile(path);
       vector<nlohmann::json> jsonNotesArray;
 
