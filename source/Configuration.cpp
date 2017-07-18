@@ -1,4 +1,5 @@
 #include "Configuration.h"
+#include "Utilities.cpp"
 #include <libconfig.h++>
 
 using namespace std;

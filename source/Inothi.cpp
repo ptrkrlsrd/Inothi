@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 #include "Note.h"
-#include "Utilities.cpp"
 #include "Configuration.cpp"
 #include "InOut.cpp"
 #include "json.hpp"
@@ -251,7 +250,7 @@ class Inothi {
 
 int main(int argc, char *argv[]) {
   //Initialize the notetaker class
-  Inothi noteTaker = Inothi(argc, argv);
+  Inothi instance = Inothi(argc, argv);
   return 0;
 }
 
