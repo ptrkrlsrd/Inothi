@@ -13,10 +13,10 @@
 #include <locale>
 #include <string>
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "Note.h"
 #include "Configuration.cpp"
 #include "InOut.cpp"
-#include "json.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -29,25 +29,19 @@ class Inothi {
 
     /* *
      * Constructor for the Notetaker
-     * @param count of arguments
-     * @param arguments
      * */
-    Inothi (int argCount, char *arguments[]) {
-      init(argCount, arguments);
-    }
-
-    /* *
-     * Initializer for the Inothi.
-     * Handles the flags and the configuration file.
-     * @param count of arguments
-     * @param arguments
-     * */
-    void init(int argCount, char *arguments[]) {
-      config = Configuration("./config.cfg");
-      if (!InOut::checkIfFileExists(config.path)) {
-        InOut::createNewJsonFile(config.path);
+    Inothi () {
+      string configPath = "./config.cfg";
+      if (InOut::checkIfFileExists(configPath)) {
+        config = Configuration(configPath);
+        string notesPath = config.path;
+        if (!InOut::checkIfFileExists(notesPath)) {
+          InOut::createNewJsonFile(notesPath);
+        }
+        noteArray = readNotesFromFile(notesPath);
+      } else {
+        cout << "No config found at" << configPath << endl;
       }
-      noteArray = readNotesFromFile(config.path);
     }
 
     /* *
@@ -119,6 +113,9 @@ class Inothi {
       return splitTags;
     }
 
+    /* *
+     * Append a note to the noteArray
+     * */
     void appendNoteToNotes(Note note) {
       noteArray.push_back(note);  // Add to the notearray
     }
@@ -209,7 +206,7 @@ class Inothi {
 
 int main(int argc, char *argv[]) {
   //Initialize the notetaker class
-  Inothi instance = Inothi(argc, argv);
+  Inothi instance = Inothi();
 
   if (argc == 1) {
     /*If theres just one argument(i.e the command),

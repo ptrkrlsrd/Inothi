@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 
 using namespace std;
 
@@ -42,6 +42,7 @@ namespace InOut {
   void createNewJsonFile (string path) {
     nlohmann::json jsonStruct = nlohmann::json::object();
     jsonStruct["notes"] = nlohmann::json::array();
+    path = Utilities::expandPath(path);
     std::ofstream o(path);
     o << std::setw(4) << jsonStruct << std::endl;
   }

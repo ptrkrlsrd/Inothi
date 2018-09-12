@@ -1,0 +1,4 @@
+compiler:
+  - clang++
+script:
+  - make all

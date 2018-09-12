@@ -53,6 +53,13 @@ namespace Utilities {
     return homedir;
   }
 
+  string expandPath(string path) {
+    string homedir = getHomeDir(); 
+    size_t f = path.find("~");
+    path.replace(f, std::string("~").length(), homedir);
+    return path;
+  }
+
   string getUserInput (string question) {
     string input = "";
     cout << question << "\n";
